@@ -1,0 +1,28 @@
+<!--
+~ Copyright (C) 2009-2015 Typesafe Inc. <http://www.typesafe.com>
+  -->
+<!-- The default logback configuration that Play uses if no other configuration is provided -->
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date{HH:mm:ss.SSS} %-5level[%X{requestID}] [%-25logger{15}]- %replace(%msg){"(?:[\W_]|^)\d{3}-?\d{2}-?(\d{4})(?:[\W_]|$)","xxx-xx-$1"} %replace(%ex){"(?:[\W_]|^)\d{3}-?\d{2}-?(\d{4})(?:[\W_]|$)","xxx-xx-$1"}%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="CONSOLE" />
+    </appender>
+
+    <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT" />
+    </appender>
+
+    <logger name="com.vladimirbaklan" level="INFO" />
+
+    <root level="WARN">
+        <appender-ref ref="ASYNCSTDOUT" />
+    </root>
+
+</configuration>
