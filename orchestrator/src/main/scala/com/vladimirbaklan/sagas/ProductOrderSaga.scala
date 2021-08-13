@@ -1,5 +1,6 @@
 package com.vladimirbaklan.sagas
 
+import com.vladimirbaklan.common.EntitiesConstants
 import com.vladimirbaklan.eventsbus.{BaseEvent, EventProducer, EventType, SagaType}
 import com.vladimirbaklan.utils.Logging
 
@@ -11,7 +12,10 @@ import com.vladimirbaklan.utils.Logging
 class ProductOrderSaga (productsProducer: EventProducer, ordersProducer: EventProducer) extends BaseSaga with Logging {
 
   override def start(event: BaseEvent): Unit = {
-    productsProducer.send(BaseEvent(eventType = EventType.BuyProduct,  attributes = Map("productId" -> event.attributes("productId")), sagaType = SagaType.OrderSaga))
+    productsProducer.send(BaseEvent(
+      eventType = EventType.BuyProduct,
+      attributes = Map(EntitiesConstants.ProductId -> event.attributes(EntitiesConstants.ProductId)),
+      sagaType = SagaType.OrderSaga))
   }
 
   override def rollback(event: BaseEvent): Unit = {
@@ -19,14 +23,20 @@ class ProductOrderSaga (productsProducer: EventProducer, ordersProducer: EventPr
       case EventType.BuyProductFailure =>
         log.error("Failed to buy product")
       case EventType.CreateOrderFailure =>
-        ordersProducer.send(BaseEvent(eventType = EventType.RevertBuyProduct, sagaType = SagaType.OrderSaga, attributes = Map("productId" -> event.attributes("productId"))))
+        ordersProducer.send(BaseEvent(
+          eventType = EventType.RevertBuyProduct,
+          sagaType = SagaType.OrderSaga,
+          attributes = Map(EntitiesConstants.ProductId -> event.attributes(EntitiesConstants.ProductId))))
     }
   }
 
   override def nextStep(event: BaseEvent): Unit = {
     event.eventType match {
       case EventType.BuyProductSuccess =>
-        productsProducer.send(BaseEvent(eventType = EventType.CreateOrder, sagaType = SagaType.OrderSaga, attributes = Map("productId" -> event.attributes("productId"))))
+        productsProducer.send(BaseEvent(
+          eventType = EventType.CreateOrder,
+          sagaType = SagaType.OrderSaga,
+          attributes = Map(EntitiesConstants.ProductId -> event.attributes(EntitiesConstants.ProductId))))
       case EventType.CreateOrderSuccess =>
         log.info(s"Order successfully created. Event: $event")
     }
