@@ -1,10 +1,10 @@
 # dummy saga with orchestrator
 
-Successful saga order flow:
+Successful order flow:
 - create product
 - create order
 
-Rollback saga order flow:
+Rollback order flow:
 - rollback order
 - rollback product
 
